@@ -1,6 +1,11 @@
+import os
+
+
 class FileManager:
     def __init__(self):
-        pass
+        with open('working_dir.txt', mode='r') as f:
+            self.root_dir = fr'{f.readline()}'
+        os.chdir(self.root_dir)
 
     def far(self):
         pass
