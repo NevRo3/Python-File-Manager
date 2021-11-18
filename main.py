@@ -1,5 +1,6 @@
 import os
 from tabulate import tabulate
+import shutil
 
 
 class FileManager:
@@ -9,6 +10,7 @@ class FileManager:
         os.chdir(self.root_dir)
 
         self.display_data = []
+        self.allowed_files = self.list_dir()[1]
 
     def far(self):
         print(f'{"-"*9}Файловый менеджер{"-"*9}')
@@ -57,7 +59,7 @@ class FileManager:
                 exit()
 
     def refresh_dir(self):
-        pass
+        self.allowed_files = self.list_dir()[1]
 
     def list_dir(self):
         self.display_data = []
@@ -73,14 +75,31 @@ class FileManager:
                         stralign='center')
         return data, self.display_data
 
-    def choice_id(self):
-        pass
+    def choice_id(self, object_id):
+        ids = [i[2] for i in self.allowed_files]
+        names = [i[1] for i in self.allowed_files]
+        if str(object_id) in ids:
+            return names[object_id - 1]
 
     def create_dir(self):
-        pass
+        dir_name = str(input("Название новой папки: "))
+        if not os.path.exists(f'{self.root_dir}/{dir_name}'):
+            os.makedirs(f'{self.root_dir}/{dir_name}')
+            print(f'Папка "{dir_name}" успешно создана')
+            self.refresh_dir()
+        else:
+            print("Папка уже существует")
 
     def delete_dir(self):
-        pass
+        dir_id = int(input('Введите ID папки чтобы удалить: '))
+        dir_name = self.choice_id(dir_id)
+        try:
+            shutil.rmtree(f'{self.root_dir}/{dir_name}')
+        except OSError as e:
+            print(f'Error: {e.filename} - {e.strerror}')
+        else:
+            print(f'Папка "{dir_name}" успешно удалена')
+            self.refresh_dir()
 
     def move_between_dir(self):
         pass
