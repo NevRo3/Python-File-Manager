@@ -8,6 +8,8 @@ class FileManager:
             self.root_dir = fr'{f.readline()}'
         os.chdir(self.root_dir)
 
+        self.display_data = []
+
     def far(self):
         print(f'{"-"*9}Файловый менеджер{"-"*9}')
         commands = [['0', 'Просмотр папки'], ['1', 'Создать папку'], ['2', 'Удалить папку'],
@@ -22,7 +24,7 @@ class FileManager:
                 'help - список действий, exit - выйти из файлового менеджера\nВведите ID команды чтобы продолжить: '))
             print('\n')
             if choose == '0':
-                print(self.list_dir())
+                print(self.list_dir()[0])
             if choose == '1':
                 self.create_dir()
             if choose == '2':
@@ -58,7 +60,18 @@ class FileManager:
         pass
 
     def list_dir(self):
-        pass
+        self.display_data = []
+        files = os.scandir(path=self.root_dir)
+        file_id = 1
+        for each in files:
+            object_data = f' - Dir - {each.name} - {file_id}' if each.is_dir() else f' - File - {each.name} - {file_id}'
+            object_info = object_data.split(' - ')
+            object_info.pop(0)
+            self.display_data.append(object_info)
+            file_id += 1
+        data = tabulate((i for i in self.display_data), headers=['Тип', 'Имя', 'ID'], tablefmt='presto',
+                        stralign='center')
+        return data, self.display_data
 
     def choice_id(self):
         pass
