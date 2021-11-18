@@ -11,6 +11,7 @@ class FileManager:
 
         self.display_data = []
         self.allowed_files = self.list_dir()[1]
+        self.path_length = len(self.root_dir.split('/'))
 
     def far(self):
         print(f'{"-"*9}Файловый менеджер{"-"*9}')
@@ -32,7 +33,7 @@ class FileManager:
             if choose == '2':
                 self.delete_dir()
             if choose == '3':
-                self.move_between_dir()
+                self.move_down_dir()
             if choose == '4':
                 self.move_up_dir()
             if choose == '5':
@@ -101,11 +102,29 @@ class FileManager:
             print(f'Папка "{dir_name}" успешно удалена')
             self.refresh_dir()
 
-    def move_between_dir(self):
-        pass
+    def move_down_dir(self):
+        chosen_dir = int(input('Введите ID папки чтобы перейти в неё: '))
+        location = self.choice_id(chosen_dir)
+        move_path = self.root_dir + f'/{location}'
+        if os.path.isdir(move_path):
+            self.root_dir += f'/{location}'
+            os.chdir(self.root_dir)
+            self.refresh_dir()
+            print(f'Успешный переход в папку {location}\nТекущий путь: {self.root_dir}')
+        else:
+            print(f'Попытка перехода в файл!\n{location} - файл, а не папка')
 
     def move_up_dir(self):
-        pass
+        location = self.root_dir.split('/')
+        if self.path_length < len(location):
+            location.pop()
+            up = '/'.join(location)
+            self.root_dir = up
+            os.chdir(self.root_dir)
+            self.refresh_dir()
+            print(f'Успешный переход в папку {location[-1]}\nТекущий путь: {self.root_dir}')
+        else:
+            print('Ошибка доступа!\nНевозможно переместиться выше заданной корневой директории')
 
     def create_file(self):
         pass
