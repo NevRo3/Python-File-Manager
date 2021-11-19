@@ -18,7 +18,7 @@ class FileManager:
         print(f'{"-"*9}Файловый менеджер{"-"*9}')
         commands = [['0', 'Просмотр папки'], ['1', 'Создать папку'], ['2', 'Удалить папку'],
                     ['3', 'Переход между папками'], ['4', 'Подняться вверх (cd ..)'], ['5', 'Создать пустой файл'],
-                    ['6', 'Запись текста в файл'], ['7', 'Просмотр txt файла'], ['8', 'Удалить файл'],
+                    ['6', 'Запись текста в файл'], ['7', 'Просмотр текстового файла'], ['8', 'Удалить файл'],
                     ['9', 'Копирование файлов'], ['10', 'Перемещение файлов'], ['11', 'Переименовать файл'],
                     ['12', 'Архив(zip) файл/папку'], ['13', 'Разархивировать файл/папку']]
         help_page = tabulate((i for i in commands), headers=['ID', 'Действие'], tablefmt='presto', stralign='left')
@@ -212,10 +212,22 @@ class FileManager:
             self.refresh_dir()
 
     def zip(self):
-        pass
+        file_id = int(input('Введите ID файла или папки для создания zip-архива: '))
+        location = self.choice_id(file_id)
+        try:
+            archive = shutil.make_archive(base_name=str(input('Введите название: ')), base_dir=location, format='zip')
+            print(f"zip-архив {archive} создан")
+        except FileNotFoundError as err:
+            print(err)
 
     def unzip(self):
-        pass
+        file_id = int(input('Введите ID файла архива для разархивации: '))
+        location = self.choice_id(file_id)
+        try:
+            shutil.unpack_archive(location, format='zip')
+            print(f"zip-архив {location} разархивирован")
+        except shutil.ReadError as err:
+            print(err)
 
 
 def main():
