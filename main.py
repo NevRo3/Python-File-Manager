@@ -1,6 +1,7 @@
 import os
 from tabulate import tabulate
 import shutil
+from distutils.dir_util import copy_tree
 
 
 class FileManager:
@@ -127,25 +128,88 @@ class FileManager:
             print('Ошибка доступа!\nНевозможно переместиться выше заданной корневой директории')
 
     def create_file(self):
-        pass
+        file_name = str(input("Имя файла: "))
+        if not os.path.exists(f'{self.root_dir}/{file_name}'):
+            new_file = open(f"{self.root_dir}/{file_name}", "w")
+            new_file.close()
+            print(f'Файл "{file_name}" успешно создан')
+            self.refresh_dir()
+        else:
+            print('Файл с таким названием уже существует')
 
     def write_file(self):
-        pass
+        file_id = int(input('Введите ID файла для записи: '))
+        location = self.choice_id(file_id)
+        try:
+            with open(f'{self.root_dir}/{location}', mode='w') as f:
+                f.write(str(input('Введите текст для записи в файл: ')))
+        except FileNotFoundError:
+            print(f'Файл с  ID = "{file_id}" не найден')
+        except IsADirectoryError:
+            print('Это директория')
+        else:
+            print('Текст успешно записан в файл')
 
     def read_file(self):
-        pass
+        file_id = int(input('Введите ID файла чтобы прочитать: '))
+        file_name = self.choice_id(file_id)
+        try:
+            file_location = f"{self.root_dir}/{file_name}"
+            with open(file_location, "r") as f:
+                text = f.read()
+            for line in text.splitlines():
+                print(line)
+        except FileNotFoundError:
+            print(f'Файл с ID = "{file_id}" не найден')
 
     def delete_file(self):
-        pass
+        file_id = int(input('Введите ID файла чтобы удалить: '))
+        file_name = self.choice_id(file_id)
+        try:
+            os.remove(f"{self.root_dir}/{file_name}")
+        except OSError as e:
+            print(f'Error: {e.filename} - {e.strerror}')
+        else:
+            print(f'Файл "{file_name}" успешно удалён')
+            self.refresh_dir()
 
     def copy_file(self):
-        pass
+        start_id = int(input('ID директории откуда копируем: '))
+        start_dir = f"{self.root_dir}/{self.choice_id(start_id)}"
+        end_id = int(input('ID директории куда копируем: '))
+        end_dir = f"{self.root_dir}/{self.choice_id(end_id)}"
+        try:
+            copy_tree(start_dir, end_dir)
+        except OSError as e:
+            print(f'Error: {e.filename} - {e.strerror}')
+        else:
+            print('Успешное копирование')
 
     def move_file(self):
-        pass
+        self.list_dir()
+        start_id = int(input('ID Файла для перемещения: '))
+        start_location = f"{self.root_dir}/{self.choice_id(start_id)}"
+        end_id = int(input('ID директории куда переместить: '))
+        end_dir = f"{self.root_dir}/{self.choice_id(end_id)}"
+        try:
+            shutil.move(start_location, end_dir)
+        except OSError as e:
+            print(f'Error: {e.filename} - {e.strerror}')
+        else:
+            print('Успешное перемещение')
+            self.refresh_dir()
 
     def rename_file(self):
-        pass
+        file_id = int(input('Введите ID файла, чтобы переименовать: '))
+        file_to_rename = f"{self.root_dir}/{self.choice_id(file_id)}"
+        new_name = str(input('Введите новое название файла: '))
+        try:
+            os.rename(file_to_rename, f'{self.root_dir}/{new_name}')
+        except OSError as e:
+            print(f'Error: {e.filename} - {e.strerror}')
+        else:
+            print('Успешное переименование')
+            self.refresh_dir()
 
     def zip(self):
         pass
